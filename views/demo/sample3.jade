@@ -1,16 +1,22 @@
 doctype html
 html(lang="en")
     head
-        include ./includes/script.jade
+        include ../includes/script.jade
         script(id="vs", type="x-shader/x-vertex").
             attribute vec3 position;
+            attribute vec4 color;
+            varying   vec4 vColor;
             uniform   mat4 mvpMatrix;
             void main(void){
+                vColor = color;
                 gl_Position = mvpMatrix * vec4(position, 1.0);
             }
         script(id="fs", type="x-shader/x-fragment").
-            void main(void){
-                gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);
+            precision mediump float;
+            varying vec4 vColor;
+            void main(void)
+            {
+                gl_FragColor = vColor;
             }
         script(type='text/javascript').
             window.onload = function(){
@@ -20,58 +26,127 @@ html(lang="en")
                 c.height = 300;
                 // webgl的context获取
                 var gl = c.getContext('webgl') || c.getContext('experimental-webgl');
-                // 设定canvas初始化的颜色
-                gl.clearColor(0.0, 0.0, 0.0, 1.0);
-                // 设定canvas初始化时候的深度
-                gl.clearDepth(1.0);
-                // canvas的初始化
-                gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
                 // 顶点着色器和片段着色器的生成
                 var v_shader = create_shader('vs');
                 var f_shader = create_shader('fs');
                 // 程序对象的生成和连接
                 var prg = create_program(v_shader, f_shader);
+
+
                 // attributeLocation的获取
-                var attLocation = gl.getAttribLocation(prg, 'position');
-                // attribute的元素数量(这次只使用 xyz ，所以是3)
-                var attStride = 3;
-                // 模型（顶点）数据
+                var attLocation = new Array(2);
+                attLocation[0] = gl.getAttribLocation(prg, 'position');
+                attLocation[1] = gl.getAttribLocation(prg, 'color');
+
+                // 将元素数attribute保存到数组中
+                var attStride = new Array(2);
+                attStride[0] = 3;
+                attStride[1] = 4;
+
+                // 保存顶点的位置情报的数组
                 var vertex_position = [
-                     0.0, 1.0, 0.0,
-                     1.0, 0.0, 0.0,
+                    0.0, 1.0, 0.0,
+                    1.0, 0.0, 0.0,
                     -1.0, 0.0, 0.0
                 ];
+
+                // 保存顶点的颜色情报的数组
+                var vertex_color = [
+                    1.0, 0.0, 0.0, 1.0,
+                    0.0, 1.0, 0.0, 1.0,
+                    0.0, 0.0, 1.0, 1.0
+                ];
+
                 // 生成VBO
-                var vbo = create_vbo(vertex_position);
-                // 绑定VBO
-                gl.bindBuffer(gl.ARRAY_BUFFER, vbo);
-                // 设定attribute属性有効
-                gl.enableVertexAttribArray(attLocation);
-                // 添加attribute属性
-                gl.vertexAttribPointer(attLocation, attStride, gl.FLOAT, false, 0, 0);
+                var position_vbo = create_vbo(vertex_position);
+                var color_vbo = create_vbo(vertex_color);
+
+                bindVbo([position_vbo, color_vbo], attLocation, attStride);
 
                 // matIV对象生成
                 var m = new matIV();
                 // 各种矩阵的生成和初始化
-                var mMatrix = m.identity(m.create());
+
                 var vMatrix = m.identity(m.create());
                 var pMatrix = m.identity(m.create());
-                var mvpMatrix = m.identity(m.create());
+
                 // 视图变换坐标矩阵
-                m.lookAt([0.0, 0.0, -2.0], [0, 0, 0], [0, 1, 0], vMatrix);
+                m.lookAt([0.0, 0.0, 2.0], [0, 0, 0], [0, 1, 0], vMatrix);
                 // 投影坐标变换矩阵
                 m.perspective(90, c.width / c.height, 0.1, 100, pMatrix);
-                // 各矩阵想成，得到最终的坐标变换矩阵
-                m.multiply(pMatrix, vMatrix, mvpMatrix);
-                m.multiply(mvpMatrix, mMatrix, mvpMatrix);
+
+                //视图和投影矩阵不变，所以先缓存起来
+                var vpMatrix = m.identity(m.create());
+                m.multiply(pMatrix, vMatrix, vpMatrix);
+
                 //uniformLocation的获取
                 var uniLocation = gl.getUniformLocation(prg, 'mvpMatrix');
-                // 向uniformLocation中传入坐标变换矩阵
-                gl.uniformMatrix4fv(uniLocation, false, mvpMatrix);
-                // 绘制模型
-                gl.drawArrays(gl.TRIANGLES, 0, 3);
-                // context的刷新
-                gl.flush();
+
+                //开始
+                frame();
+
+                var count = 0;
+                /**
+                * 画面的每一帧
+                 */
+                function frame()
+                {
+                    // 设定canvas初始化的颜色
+                    gl.clearColor(0.0, 0.0, 0.0, 1.0);
+                    // 设定canvas初始化时候的深度
+                    gl.clearDepth(1.0);
+                    // canvas的初始化
+                    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+                    count++;
+
+                    //使用计数器算出角度
+                    var rad = (count % 360) * Math.PI / 180;
+
+                    //模型1按照一个圆形轨道进行旋转
+                    var x = Math.cos(rad);
+                    var y = Math.sin(rad);
+
+                    //第一个模型
+                    var mMatrix = m.identity(m.create());
+                    m.rotate(mMatrix, rad, [0.0, 0.0, -1.0], mMatrix);
+                    m.translate(mMatrix, [-1.0, 0.0, 0.0], mMatrix);
+                    var mvpMatrix = m.identity(m.create());
+                    m.multiply(vpMatrix, mMatrix, mvpMatrix);
+                    //向uniformLocation中传入坐标变换矩阵
+                    gl.uniformMatrix4fv(uniLocation, false, mvpMatrix);
+                    //绘制模型
+                    gl.drawArrays(gl.TRIANGLES, 0, 3);
+
+                    //第二个模型
+                    var mMatrix = m.identity(m.create());
+                    m.rotate(mMatrix, rad, [0.0, 1.0, 0.0], mMatrix);
+                    var mvpMatrix = m.identity(m.create());
+                    m.multiply(vpMatrix, mMatrix, mvpMatrix);
+                    //向uniformLocation中传入坐标变换矩阵
+                    gl.uniformMatrix4fv(uniLocation, false, mvpMatrix);
+                    //绘制模型
+                    gl.drawArrays(gl.TRIANGLES, 0, 3);
+
+                    //context的刷新
+                    gl.flush();
+
+                    setTimeout(frame, 1000/20);
+                }
+
+                /**
+                * 快捷绑定多个vbo的方法
+                 */
+                function bindVbo(vbos, locations, attr)
+                {
+                    for(var key in vbos)
+                    {
+                        gl.bindBuffer(gl.ARRAY_BUFFER, vbos[key]);
+                        gl.enableVertexAttribArray(locations[key]);
+                        gl.vertexAttribPointer(locations[key], attr[key], gl.FLOAT, false, 0, 0);
+                    }
+                }
 
                 // 生成着色器的函数
                 function create_shader(id){
