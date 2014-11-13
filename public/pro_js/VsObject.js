@@ -3,11 +3,9 @@
  * @param pointCount 开销的顶点数目
  * @constructor
  */
-var VsObject = function(vsGame)
+var VsObject = function()
 {
     var self = this;
-    self.game = vsGame;
-    self._init();
 }
 
 /**

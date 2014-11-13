@@ -239,3 +239,12 @@ VsGame.prototype._createIbo = function(data)
     // 返回生成的IBO
     return ibo;
 }
+
+VsGame.prototype.newObject = function(type, args)
+{
+    var self = this;
+    var obj = new type(args);
+    obj.game = self;
+    obj._init();
+    return obj;
+}

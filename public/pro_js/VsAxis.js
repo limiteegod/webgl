@@ -1,18 +1,13 @@
 /**
  *
- * @param pointCount 开销的顶点数目
  * @constructor
  */
-var VsAxis = function(vsGame){
+var VsAxis = function(){
     var self = this;
-    self.game = vsGame;
-    self._init();
+    console.log("init VsAxis......................");
+    VsObject.call(self);
 }
-
-for(var key in VsObject.prototype)
-{
-    VsAxis.prototype[key] = VsObject.prototype[key];
-}
+VsAxis.prototype = new VsObject();
 
 /**
  * 创建缓存数据

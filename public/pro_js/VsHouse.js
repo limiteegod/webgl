@@ -3,16 +3,12 @@
  * @param pointCount 开销的顶点数目
  * @constructor
  */
-var VsHouse = function(vsGame){
+var VsHouse = function(){
     var self = this;
-    self.game = vsGame;
-    self._init();
+    VsObject.call(self);
 }
 
-for(var key in VsObject.prototype)
-{
-    VsHouse.prototype[key] = VsObject.prototype[key];
-}
+VsHouse.prototype = new VsObject();
 
 /**
  * 创建缓存数据
