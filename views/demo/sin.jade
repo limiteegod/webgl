@@ -1,0 +1,49 @@
+doctype html
+html(lang="en")
+    head
+        include ../includes/script.jade
+        script(id="vs", type="x-shader/x-vertex").
+            attribute vec3 position;
+            attribute vec4 color;
+            varying   vec4 vColor;
+            uniform   mat4 mvpMatrix;
+            void main(void){
+                vColor = color;
+                gl_Position = mvpMatrix * vec4(position, 1.0);
+            }
+        script(id="fs", type="x-shader/x-fragment").
+            precision mediump float;
+            varying vec4 vColor;
+            void main(void)
+            {
+                gl_FragColor = vColor;
+            }
+        script(type='text/javascript').
+            window.onload = function(){
+                var game = new VsGame('canvas');
+                var obj1 = new VsSin(game);
+                var axis = new VsAxis(game);
+                var face = new VsFace(game);
+                var house = new VsHouse(game);
+                face.add(house);
+
+                face.move([0.0, -2.0, 0.0]);
+                face.rotate(Math.PI*45/180, [1.0, 0.0, 0.0]);
+
+                game.add(obj1);
+                game.add(axis);
+                game.add(face);
+
+                var start = function(){
+                    //obj1.move([0.01, 0.0, 0.0]);
+                    obj1.rotate(Math.PI/(180*5), [0.0, 1.0, 0.0]);
+                    game.run();
+
+                    setTimeout(start,
+                    1000/60);
+                };
+                start();
+            }
+    body(style="margin:0px;padding:0px;scroll:none;background-color:black;")
+        .container(style="margin:0px;padding:0px;scroll:none;")
+            canvas(id="canvas")
