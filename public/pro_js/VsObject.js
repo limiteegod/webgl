@@ -35,6 +35,9 @@ VsObject.prototype._init = function()
 
     self.parent = null;     //没有父对象
 
+    self.tex = null;    //纹理
+
+    self.tc = null;
     self._createBuffer();
 }
 
@@ -80,6 +83,8 @@ VsObject.prototype._createBuffer = function()
         ptIndexCount++;
     }
     self.ptIndexCount = ptIndexCount;
+
+    self.tex = self.game.gl.createTexture();
 }
 
 /**
@@ -116,6 +121,20 @@ VsObject.prototype.activate = function()
 {
     var self = this;
     return self.mMatrix;
+}
+
+VsObject.prototype.createTexture = function(source)
+{
+    var self = this;
+    console.log(self.tex);
+    var img = new Image();
+    img.onload = function(){
+        self.game.gl.bindTexture(self.game.gl.TEXTURE_2D, self.tex);
+        self.game.gl.texImage2D(self.game.gl.TEXTURE_2D, 0, self.game.gl.RGBA, self.game.gl.RGBA, self.game.gl.UNSIGNED_BYTE, img);
+        self.game.gl.generateMipmap(self.game.gl.TEXTURE_2D);
+        self.game.gl.bindTexture(self.game.gl.TEXTURE_2D, null);
+    };
+    img.src = source;
 }
 
 /**

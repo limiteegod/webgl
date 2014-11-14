@@ -20,6 +20,7 @@ var VsGame = function(id)
     gl.enable(gl.CULL_FACE);
     gl.enable(gl.DEPTH_TEST);
     gl.depthFunc(gl.LEQUAL);
+
     //设置上下文
     self.gl = gl;
     //顶点着色器和片段着色器的生成
@@ -32,6 +33,7 @@ var VsGame = function(id)
 
     //uniformLocation的获取
     self.uniLocation = self.gl.getUniformLocation(self.program, 'mvpMatrix');
+    self.texLocation  = self.gl.getUniformLocation(self.program, 'texture');
 
     //存放所有游戏对象
     self.objs = [];
@@ -109,21 +111,38 @@ VsGame.prototype.refreshBuffer = function(obj)
 {
     var self = this;
     // attributeLocation的获取
-    var attLocation = new Array(2);
-    attLocation[0] = self.gl.getAttribLocation(self.program, 'position');
-    attLocation[1] = self.gl.getAttribLocation(self.program, 'color');
+    var attLocation = [];
+    attLocation[attLocation.length] = self.gl.getAttribLocation(self.program, 'position');
+    attLocation[attLocation.length] = self.gl.getAttribLocation(self.program, 'color');
+
     // 将元素数attribute保存到数组中
-    var attStride = new Array(2);
-    attStride[0] = 3;
-    attStride[1] = 4;
+    var attStride = [];
+    attStride[attStride.length] = 3;
+    attStride[attStride.length] = 4;
+
     //生成VBO
     var position_vbo = self._createVbo(obj.vp);
     var color_vbo = self._createVbo(obj.vc);
-    self._bindVbo([position_vbo, color_vbo], attLocation, attStride);
+    var vbos = [position_vbo, color_vbo];
+
+    //如果有纹理
+    if(obj.tc)
+    {
+        attLocation[attLocation.length] = self.gl.getAttribLocation(self.program, 'textureCoord');
+        attStride[attStride.length] = 2;
+        var vTextureCoord = self._createVbo(obj.tc);
+        vbos[vbos.length] = vTextureCoord;
+    }
+
+    self._bindVbo(vbos, attLocation, attStride);
     //生成IBO
     var ibo = self._createIbo(obj.pi);
     // IBO进行绑定并添加
     self.gl.bindBuffer(self.gl.ELEMENT_ARRAY_BUFFER, ibo);
+
+    self.gl.activeTexture(self.gl.TEXTURE0);
+    self.gl.bindTexture(self.gl.TEXTURE_2D, obj.tex);
+    self.gl.uniform1i(self.texLocation, 0);
 }
 
 
