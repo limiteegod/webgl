@@ -140,9 +140,12 @@ VsGame.prototype.refreshBuffer = function(obj)
     // IBO进行绑定并添加
     self.gl.bindBuffer(self.gl.ELEMENT_ARRAY_BUFFER, ibo);
 
-    self.gl.activeTexture(self.gl.TEXTURE0);
-    self.gl.bindTexture(self.gl.TEXTURE_2D, obj.tex);
-    self.gl.uniform1i(self.texLocation, 0);
+    if(obj.tc)
+    {
+        self.gl.activeTexture(self.gl.TEXTURE0);
+        self.gl.bindTexture(self.gl.TEXTURE_2D, obj.tex);
+        self.gl.uniform1i(self.texLocation, 0);
+    }
 }
 
 
