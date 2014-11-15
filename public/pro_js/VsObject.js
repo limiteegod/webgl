@@ -84,7 +84,7 @@ VsObject.prototype._createBuffer = function()
     }
     self.ptIndexCount = ptIndexCount;
 
-    self.tex = self.game.gl.createTexture();
+    self.tex = null;
 }
 
 /**
@@ -129,6 +129,7 @@ VsObject.prototype.createTexture = function(source)
     console.log(self.tex);
     var img = new Image();
     img.onload = function(){
+        self.game.gl.createTexture()
         self.game.gl.bindTexture(self.game.gl.TEXTURE_2D, self.tex);
         self.game.gl.texImage2D(self.game.gl.TEXTURE_2D, 0, self.game.gl.RGBA, self.game.gl.RGBA, self.game.gl.UNSIGNED_BYTE, img);
         self.game.gl.generateMipmap(self.game.gl.TEXTURE_2D);

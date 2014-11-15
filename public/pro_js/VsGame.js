@@ -35,8 +35,13 @@ var VsGame = function(id)
     self.uniLocation = self.gl.getUniformLocation(self.program, 'mvpMatrix');
     self.texLocation  = self.gl.getUniformLocation(self.program, 'texture');
 
+    self.hasTc = self.gl.getUniformLocation(self.program, 'hasTc');
+    self.vHasTc = self.gl.getUniformLocation(self.program, 'vHasTc');
+
     //存放所有游戏对象
     self.objs = [];
+
+    self.gl.activeTexture(self.gl.TEXTURE0);
 }
 
 /**
@@ -126,12 +131,23 @@ VsGame.prototype.refreshBuffer = function(obj)
     var vbos = [position_vbo, color_vbo];
 
     //如果有纹理
-    if(obj.tc)
+    if(obj.tc && obj.tex)
     {
+        self.gl.uniform1i(self.hasTc, 1);
+        self.gl.uniform1i(self.vHasTc, 1);
+
         attLocation[attLocation.length] = self.gl.getAttribLocation(self.program, 'textureCoord');
         attStride[attStride.length] = 2;
         var vTextureCoord = self._createVbo(obj.tc);
         vbos[vbos.length] = vTextureCoord;
+
+
+        self.gl.bindTexture(self.gl.TEXTURE_2D, obj.tex);
+    }
+    else
+    {
+        self.gl.uniform1i(self.hasTc, 0);
+        self.gl.uniform1i(self.vHasTc, 0);
     }
 
     self._bindVbo(vbos, attLocation, attStride);
@@ -139,13 +155,6 @@ VsGame.prototype.refreshBuffer = function(obj)
     var ibo = self._createIbo(obj.pi);
     // IBO进行绑定并添加
     self.gl.bindBuffer(self.gl.ELEMENT_ARRAY_BUFFER, ibo);
-
-    if(obj.tc)
-    {
-        self.gl.activeTexture(self.gl.TEXTURE0);
-        self.gl.bindTexture(self.gl.TEXTURE_2D, obj.tex);
-        self.gl.uniform1i(self.texLocation, 0);
-    }
 }
 
 

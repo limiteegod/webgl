@@ -12,9 +12,14 @@ html(lang="en")
             varying   vec4 vColor;
             varying   vec2 vTextureCoord;   //用于向片段着色器传值
 
+            uniform int hasTc; //是否有纹理贴图
+
             void main(void){
                 vColor = color;
-                vTextureCoord = textureCoord;
+                if(hasTc > 0)
+                {
+                    vTextureCoord = textureCoord;
+                }
                 gl_Position = mvpMatrix * vec4(position, 1.0);
             }
         script(id="fs", type="x-shader/x-fragment").
@@ -22,10 +27,20 @@ html(lang="en")
             uniform sampler2D texture;
             varying vec4 vColor;
             varying vec2 vTextureCoord;
+
+            uniform int vHasTc; //是否有纹理贴图
+
             void main(void)
             {
-                vec4 smpColor = texture2D(texture, vTextureCoord);
-                gl_FragColor  = vColor * smpColor;
+                if(vHasTc > 0)
+                {
+                    vec4 smpColor = texture2D(texture, vTextureCoord);
+                    gl_FragColor  = vColor * smpColor;
+                }
+                else
+                {
+                    gl_FragColor = vColor;
+                }
             }
         script(type='text/javascript').
             window.onload = function(){
