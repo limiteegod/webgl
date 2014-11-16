@@ -45,24 +45,15 @@ html(lang="en")
         script(type='text/javascript').
             window.onload = function(){
                 var game = new VsGame('canvas');
+
                 var sin = game.newObject(VsSin, []);
-                var axis = game.newObject(VsAxis, []);
-                var face = game.newObject(VsFace, []);
-                var house = game.newObject(VsHouse, []);
-
-                face.add(house);
-                face.move([0.0, -2.0, 0.0]);
-                face.rotate(Math.PI*45/180, [1.0, 0.0, 0.0]);
-
                 game.add(sin);
-                game.add(axis);
-                game.add(face);
+
+                var house = game.newObject(VsHouse, []);
+                game.add(house);
 
                 var start = function(){
-                    //obj1.move([0.01, 0.0, 0.0]);
-                    sin.rotate(Math.PI/(180*5), [0.0, 1.0, 0.0]);
                     game.run();
-
                     setTimeout(start,
                     1000/60);
                 };

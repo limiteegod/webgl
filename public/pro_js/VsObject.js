@@ -24,7 +24,6 @@ VsObject.prototype._init = function()
     self.ptStart = 0;   //顶点缓存的开始位置
     self.ptIndexStart = 0;  //顶点索引缓存开始的位置
 
-    self.vp = [];           //顶点
     self.vc = [];           //颜色
     self.pi = [];           //顶点索引
 
@@ -36,8 +35,6 @@ VsObject.prototype._init = function()
     self.parent = null;     //没有父对象
 
     self.tex = null;    //纹理
-
-    self.tc = null;
     self._createBuffer();
 }
 

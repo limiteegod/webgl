@@ -51,6 +51,8 @@ VsSin.prototype._createBuffer = function()
         pi[ptIndexCount] = i;
         ptIndexCount++;
     }
+    pi[ptIndexCount] = count - 1;
+    ptIndexCount++;
     self.ptIndexCount = ptIndexCount;
 }
 
@@ -62,5 +64,5 @@ VsSin.prototype.draw = function()
     var self = this;
     self.changeVP();
     self.game.refreshBuffer(self);
-    self.game.gl.drawElements(self.game.gl.LINES, self.ptCount*2, self.game.gl.UNSIGNED_SHORT, 0);
+    self.game.gl.drawElements(self.game.gl.LINES, self.ptIndexCount, self.game.gl.UNSIGNED_SHORT, 0);
 }

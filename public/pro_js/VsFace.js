@@ -30,28 +30,64 @@ VsFace.prototype._createBuffer = function()
         4.0, 0.0, 4.0,
         -4.0, 0.0, 4.0,
         -4.0, 0.0, -4.0,
-        4.0, 0.0, -4.0
+        4.0, 0.0, -4.0,
+
+        0.0, 0.0, 0.0,
+
+        4.0, 0.0, 0.0,
+        0.0, 0.0, 4.0,
+        -4.0, 0.0, 0.0,
+        0.0, 0.0, -4.0
     ]
 
     self.vc = [
-        0.56, 0.56, 0.157, 1.0,
-        0.56, 0.56, 0.157, 1.0,
-        0.56, 0.56, 0.157, 1.0,
-        0.56, 0.56, 0.157, 1.0
+        1.0, 1.0, 1.0, 1.0,
+        1.0, 1.0, 1.0, 1.0,
+        1.0, 1.0, 1.0, 1.0,
+        1.0, 1.0, 1.0, 1.0,
+        1.0, 1.0, 1.0, 1.0,
+        1.0, 1.0, 1.0, 1.0,
+        1.0, 1.0, 1.0, 1.0,
+        1.0, 1.0, 1.0, 1.0,
+        1.0, 1.0, 1.0, 1.0
     ]
 
     self.pi = [
-        2, 1, 0,
-        0, 3, 2
+        0,5,6,
+        5,4,6,
+
+        1,6,7,
+        6,4,7,
+
+        2,7,8,
+        7,4,8,
+
+        3,8,5,
+        8,4,5
     ]
 
-    self.ptCount = 4;
+    self.ptCount = self.vp.length/3;
 
-    self.ptIndexCount = 6;
+    self.ptIndexCount = self.pi.length;
+
+    //纹理坐标
+    self.tc = [
+        0.0, 1.0,
+        0.0, 0.0,
+        1.0, 0.0,
+        1.0, 1.0,
+
+        0.0, 1.0,
+        0.0, 0.0,
+        1.0, 0.0,
+        1.0, 1.0,
+
+        0.0, 1.0
+    ];
+
+    self.tex = self.game.gl.createTexture();
+    self.createTexture("floor.png");
 }
-
-//face.rotate(Math.PI/(180*5), [0.0, 1.0, 0.0]);
-//face.move([0.0, 0.0, -2.82]);
 
 /**
  * 模型在运行时的变换都在此发生
@@ -74,6 +110,6 @@ VsFace.prototype.draw = function()
     var self = this;
     self.changeVP();
     self.game.refreshBuffer(self);
-    self.game.gl.drawElements(self.game.gl.TRIANGLES, 6, self.game.gl.UNSIGNED_SHORT, 0);
+    self.game.gl.drawElements(self.game.gl.TRIANGLES, self.ptIndexCount, self.game.gl.UNSIGNED_SHORT, 0);
     self.drawChildren();
 }

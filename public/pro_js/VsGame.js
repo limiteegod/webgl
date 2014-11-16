@@ -141,13 +141,17 @@ VsGame.prototype.refreshBuffer = function(obj)
         var vTextureCoord = self._createVbo(obj.tc);
         vbos[vbos.length] = vTextureCoord;
 
-
         self.gl.bindTexture(self.gl.TEXTURE_2D, obj.tex);
     }
     else
     {
         self.gl.uniform1i(self.hasTc, 0);
         self.gl.uniform1i(self.vHasTc, 0);
+
+        var loc = self.gl.getAttribLocation(self.program, 'textureCoord');
+        self.gl.disableVertexAttribArray(loc);
+
+        self.gl.bindTexture(self.gl.TEXTURE_2D, null);
     }
 
     self._bindVbo(vbos, attLocation, attStride);
