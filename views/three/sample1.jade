@@ -1,0 +1,29 @@
+doctype html
+html(lang="en")
+    head
+        include ../includes/three.jade
+        script(type='text/javascript').
+            window.onload = function(){
+                var container = document.getElementById("container");
+                var renderer = new THREE.WebGLRenderer();
+                renderer.setSize(container.offsetWidth, container.offsetHeight);
+                container.appendChild(renderer.domElement);
+
+                //create scene
+                var scene = new THREE.Scene();
+
+                //create a camera
+                var camera = new THREE.PerspectiveCamera(45, container.offsetWidth/container.offsetHeight, 1, 4000);
+                camera.position.set(0, 0, 3.3333);
+                scene.add(camera);
+
+                //add rectangle to the scene
+                var geometry = new THREE.PlaneGeometry(1, 1);
+                var mesh = new THREE.Mesh(geometry, new THREE.MeshBasicMaterial());
+                scene.add(mesh);
+
+                //render
+                renderer.render(scene, camera);
+            }
+    body
+        div(id="container", style="width:500px;height:500px;background-color:#000000")

@@ -1,0 +1,15 @@
+doctype html
+html(lang="en")
+    head
+        include ../includes/three.jade
+
+        script(type='text/javascript', src='./pro_js/earth-basic.js')
+        script(type='text/javascript').
+            window.onload = function(){
+                var container = document.getElementById("container");
+                var app = new EarthApp();
+                app.init({ container: container });
+                app.run();
+            }
+    body
+        div(id="container", style="width:98%;height:98%;overflow:hidden;background-color:#000000;position:absolute;")
